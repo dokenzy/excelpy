@@ -1,0 +1,8 @@
+.DS_Store
+.ropeproject
+.build
+.dist
+build
+dist
+src/excelpy/__pycache__
+excelpy.egg-info
