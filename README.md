@@ -27,6 +27,7 @@ Usage
     excel.deleteSheet('Sheet2')
     
     excel.copySheet('Slayers')
+    # copy as 'Slasyers_copy'
     
     excel.copySheet('Slayers', '슬레이어즈')
     
@@ -42,6 +43,7 @@ To Do
 -----
 * Support Python 2.7
 * Change the count property value of <sst> Element in 'xl/sharedString.xml' file when cell changed, add/delete/copy sheets.
+* change default sheet name when not given copied sheetname
 * Sheet ordering
 * Add testcase
 * Refactoring
