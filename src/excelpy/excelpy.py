@@ -47,7 +47,7 @@ class ExcelPy(object):
         '''remove working directory and file.
         '''
         try:
-            shutil.rmtree(self.target_dir)
+            # shutil.rmtree(self.target_dir)
             os.remove(self.zipped_file_path)
             os.remove(self.xlsx_file_path)
         except:
@@ -150,7 +150,9 @@ class ExcelPy(object):
         # get app.xml
         app_XML = self._getEtree(os.path.join(self.target_dir, 'docProps', APP_NAME))
 
-        #TitleOfPartsVector = app_XML.find('./ns:TitlesOfParts', namespaces={'ns': ns}).find('vector')
+        # TODO
+        # TitleOfParts element can be not exist.
+        # In the case, this code will make problem.
         TitleOfParts = app_XML.find('./ns:TitlesOfParts', namespaces={'ns': NS_PROPERTIES})
         TitleOfPartsVector = TitleOfParts.find('./vt:vector', namespaces={'vt': NS_DOC_PROPS_VTYPES})
 
@@ -422,6 +424,9 @@ class ExcelPy(object):
     def deleteSheet(self, sheetname):
         # TODO
         # decrease count property of <sst> in 'sharedString.xml' file.
+        curr_s_type_count = self._get_length_type_is_s_sheetfile(sheetname)
+        self._set_count_sharedStrings(curr_s_type_count * -1)
+
         self._del_sheet_id = self._getSheetNum(sheetname)
         sheetidx = self._makeXMLfilename(self._del_sheet_id)
         self._modContentTypes(sheetidx)
