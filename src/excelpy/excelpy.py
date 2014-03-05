@@ -157,6 +157,8 @@ class ExcelPy(object):
         i4 = app_XML.find('.//vt:i4', namespaces={'vt': NS_DOC_PROPS_VTYPES})
         lpstrs = TitleOfPartsVector.findall('ns:lpstr', namespaces={'ns': NS_DOC_PROPS_VTYPES})
 
+        # TODO
+        # change var name from count to lpstr_count
         count = len(lpstrs)  # current sheets
         if delete:
             count -= 1
@@ -362,6 +364,28 @@ class ExcelPy(object):
         new_uniqueCount = int(self.sst.get('uniqueCount')) + step
         self.sst.set('uniqueCount', str(new_uniqueCount))
 
+    @property
+    def _get_count_sharedStrings(self):
+        aaa = int(self.sst.get('count'))
+        return aaa
+
+    def _set_count_sharedStrings(self, add_count_value):
+        new_count_value = str(self._get_count_sharedStrings + add_count_value)
+        self.sst.set('count', new_count_value)
+        self._saveEtree(etree.tostring(self.SharedStringXML),\
+            os.path.join(self.target_dir, 'xl', 'sharedStrings.xml'))
+
+    def _get_length_type_is_s_sheetfile(self, sheetname):
+        '''
+        get the length of <c> element that t property is 's'\
+        in xl/worksheets/sheet[#].xml file.
+        '''
+        sheetnum = self._getSheetNum(sheetname)
+        file_name = self._makeXMLfilename(str(sheetnum))
+        sheet_file = os.path.join(self.target_dir, 'xl', 'worksheets', file_name)
+        sheetXML = self._getEtree(sheet_file)
+        return len(sheetXML.xpath('//ns:c[@t="s"]', namespaces={'ns': NS_SPREADSHEETML}))
+
     def addSheet(self, new_sheet_name):
         # TODO:
         # select sheetId
@@ -377,11 +401,13 @@ class ExcelPy(object):
     def copySheet(self, orig_sheetname, copy_name=None):
         if copy_name is None:
             copy_name = orig_sheetname + ' copy'
-            # TODO
-            # change (2), (3), ... instead of static string ' copy'
+
+        curr_s_type_count = self._get_length_type_is_s_sheetfile(orig_sheetname)
+        self._set_count_sharedStrings(curr_s_type_count)
 
         self._modContentTypes()
         if self._modApp(copy_name):
+            # TODO
             # save()메소드 호출하지 않는 방법?
             self.save()
         else:
