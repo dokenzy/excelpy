@@ -47,7 +47,7 @@ class ExcelPy(object):
         '''remove working directory and file.
         '''
         try:
-            # shutil.rmtree(self.target_dir)
+            shutil.rmtree(self.target_dir)
             os.remove(self.zipped_file_path)
             os.remove(self.xlsx_file_path)
         except:
